@@ -1,0 +1,100 @@
+sb1.seeds = array
+all
+sb1.bucket = 1
+sb1.seeds.add(sb2)
+sb1.bucket << sb2
+SeedBucket.bucket
+SeedBucket
+reflections = SeedBucket.reflect_on_all_associations
+  puts ":#{reflection.macro} => :#{reflection.name}"
+sb1.seeds << sb1
+sb1.containments
+sb1.reflect_on_all_associations
+sb1.bucket 
+sb1.bucket = 5
+sb1.assign_attributes({ title: "bucket", bucket: sb2}) 
+sb1.assign_attributes({ title: "bucket", bucket: sb2})
+sb1.sb2
+@edges = Containtment.find(:all)
+@edges = Containment.find(:all)
+@edges
+@edges = Containment.all
+sb1.seed
+sb1.yaml
+sb1.to_yaml
+sb1.debug
+sb1.inspect
+sb1.bucket = sb1
+sb1.bucket = SeedBucket.create(name: "allen")
+sb1.bucket = SeedBucket.create(title: "allen")
+sb1.bucket = sb2
+Containment
+sb1.containments_as_bucket
+sb1.containment_as_seed
+sb1.body = "body"
+sb1.seeds << sb2,sb3
+sb1.seeds << sb2, sb3
+sb1 = SeedBox.new
+sb1 = Seeducket.new
+sb1.seeds << sb3
+:sql
+ActiveRecord::Base.connection.execute("SELECT * FROM containments")
+@containments = ActiveRecord::Base.connection.execute("SELECT * FROM users")
+@containments = ActiveRecord::Base.connection.execute("SELECT * FROM containments")
+reflections.each do |reflection|
+@containments.each
+@containments.each do |row|
+puts row
+end
+@containments = ActiveRecord::Base.connection.execute("SELECT "bucket_id", "seed_id" FROM containments")
+@containments = ActiveRecord::Base.connection.execute("SELECT bucket_id, seed_id FROM containments")
+sb2.bucket = sb1
+sb2.containment_as_seed
+sb2.containment_as_bucket
+sb3 = SeedBucket.new.save
+sb1 = SeedBucket.find(1)
+sb1.title = "Allen"
+sb2.title = "Paltrow"
+sb3 = SeedBucket.find(3)
+sb3.title = "Krulwich"
+sb1.title = :Allen
+sb2.title = "Paltrow
+"
+sb3 = SeedBucket.new(title: Krulwich)
+sb3 = SeedBucket.new(title: :Krulwich)
+s,3
+sb2.bucket = sb3
+sb2.seed
+sb3.seeds << sb1
+SeedBuckets.all
+SeedBucket.all
+sb1 = SeedBucket.new
+sb1.save
+sb2 = SeedBucket.new
+sb2.save
+sb3 = SeedBucket.new
+sb4 = SeedBucket.new
+sb3.save
+sb4.save
+sb1.seeds << sb2
+sb3.bucket = sb1
+sb3.seeds << sb4
+sb4.bucket = sb3
+Containments.al
+Containments.all
+Containment.all
+sb1.containment_as_bucket
+sb1
+sb2
+sb3
+sb4
+sb1.seeds
+sb2.seeds
+sb3.seeds
+sb4.seeds
+sb1.bucket
+sb2.bucket
+sb3.bucket
+sb4.bucket
+5
+1/2
