@@ -11,20 +11,35 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120616140815) do
+ActiveRecord::Schema.define(:version => 20120622135720) do
 
-  create_table "containments", :force => true do |t|
+  create_table "plants", :force => true do |t|
+    t.string   "title"
+    t.text     "body"
     t.integer  "bucket_id"
-    t.integer  "seed_id"
-    t.integer  "order"
-    t.boolean  "in"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.integer  "user_id"
+    t.integer  "vine_id"
+  end
+
+  create_table "seeds", :force => true do |t|
+    t.string   "title"
+    t.text     "body"
+    t.integer  "vine_id"
+    t.integer  "user_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
 
-  create_table "seed_buckets", :force => true do |t|
-    t.string   "title"
-    t.text     "body"
+  create_table "users", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "vines", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
