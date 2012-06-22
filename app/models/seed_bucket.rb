@@ -15,7 +15,7 @@ class SeedBucket < ActiveRecord::Base
   ##           O ---------------------------> O        =  Seed is 
   ##         Seed         Containment       Bucket        in Bucket
   
-  ##  If a SeedBucket only hadmany containments, we couldn't represent
+  ##  If a SeedBucket only had many containments, we couldn't represent
   ##  a digraph. In order to represent direction in the digraph, each 
   ##  SeedBucket hasmany containment_as_bucket and has one 
   ##  containment_as_seed.
