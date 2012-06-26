@@ -1,0 +1,2 @@
+class VinesController < ApplicationController
+end
