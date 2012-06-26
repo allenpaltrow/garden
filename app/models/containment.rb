@@ -4,5 +4,4 @@ class Containment < ActiveRecord::Base
   belongs_to :seed,   :foreign_key => "seed_id",   :class_name => "SeedBucket"
   
   validates_uniqueness_of :seed_id, :scope => :bucket_id, :message => "This seed is already in this bucket"
-  
 end

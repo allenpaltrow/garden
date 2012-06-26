@@ -44,9 +44,9 @@ describe SeedBucket do
       @bucket.seeds.should include(@seed)
     end
 
-    it "works to add 1000 seeds" do
+    it "works to add 100 seeds" do
       seedArray = []
-      for i in 1..1000
+      for i in 1..100
         seed_temp = SeedBucket.new
         seedArray << seed_temp
         @bucket.seeds << seed_temp
@@ -81,7 +81,7 @@ describe SeedBucket do
       @bucket.seeds << @seed
       @bucket.seeds.should include @seed
       SeedBucket.destroy(@seed)
-      @bucket.seeds.should_not include @seed
+      SeedBucket.find(@bucket).seeds.should_not include @seed
     end
   end
 end

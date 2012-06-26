@@ -1,0 +1,10 @@
+Bucket Page! 
+<br>
+<%= @bucket.id%><br>
+<%= @bucket.page_title %><br>
+<%= @bucket.body %><br>
+--
+Seeds:
+<% @bucket.seeds.each do |seed|%>
+		<%="Seed_id: #{seed.id}, Seed_title: #{seed.page_title}, Seed_body: #{seed.body}"%>
+<%	end %>

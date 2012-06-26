@@ -1,0 +1,2 @@
+class RootsController < ApplicationController
+end

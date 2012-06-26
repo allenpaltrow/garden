@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120616140815) do
+ActiveRecord::Schema.define(:version => 20120625153130) do
 
   create_table "containments", :force => true do |t|
     t.integer  "bucket_id"
@@ -22,11 +22,19 @@ ActiveRecord::Schema.define(:version => 20120616140815) do
     t.datetime "updated_at", :null => false
   end
 
+  create_table "roots", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.integer  "parent_id"
+    t.integer  "child_id"
+  end
+
   create_table "seed_buckets", :force => true do |t|
-    t.string   "title"
+    t.string   "page_title"
     t.text     "body"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "url_title"
   end
 
 end
