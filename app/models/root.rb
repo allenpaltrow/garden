@@ -4,5 +4,5 @@ class Root < ActiveRecord::Base
   belongs_to :parent, :foreign_key => "parent_id", :class_name => "SeedBucket"
   belongs_to :child,   :foreign_key => "child_id",   :class_name => "SeedBucket"
   
-  validates_uniqueness_of :child_id, :scope => :parent_id, :message => "This seed already has this parent"
+  validates_uniqueness_of :child_id, :scope => :parent_id, :silent => true
 end
