@@ -11,13 +11,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120626152159) do
+ActiveRecord::Schema.define(:version => 20120627222034) do
 
   create_table "containments", :force => true do |t|
     t.integer  "bucket_id"
     t.integer  "seed_id"
     t.integer  "order"
-    t.boolean  "in"
+    t.boolean  "in_bucket"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end

@@ -1,6 +1,20 @@
 class SeedBucket < ActiveRecord::Base
    attr_accessible :page_title, :body, :bucket, :seed, :bucket_id, :seed_id, :parent_id, :child_id
-
+   
+   /def self.copy_seed(seed_to_copy, destination_bucket, in?)
+      ##  Roots
+      new_seed = seed_to_copy.dup                # copy all fields of old seed
+      new_seed.parent = seed_to_copy             # new seed has roots to, and is child of, old seed 
+      
+      ##  Vines
+      new_seed.pulls_from << seed_to_copy        # create vine from old bucket to new bucket
+                                                 # make it a some_vine
+      ##  Containment 
+      new_seed.bucket = destination_bucket       # put new seed in the destination bucket
+      new_containment_edge = Containment.where(bucket_id: destination_bucket.id, seed_id: seed_to_copy)   
+      new_containment_edge.in = in? # set the containment edge's in value based on the in? parameter
+   end
+   /
    ######################  The SeedBucket Model ####################
    #################################################################
    ## The SeedBucket is a Node object that is related to other nodes
@@ -15,7 +29,7 @@ class SeedBucket < ActiveRecord::Base
    ##           O ---------------------------> O        =  Seed is 
    ##         Seed         Containment       Bucket        in Bucket
 
-   ##  If a SeedBucket only hadmany containments, we couldn't represent
+   ##  If a SeedBucket only has_many containments, we couldn't represent
    ##  a digraph. In order to represent direction in the digraph, each 
    ##  SeedBucket hasmany containment_as_bucket and has one 
    ##  containment_as_seed.

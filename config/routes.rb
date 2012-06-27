@@ -1,13 +1,25 @@
 Garden::Application.routes.draw do
   
-  # The priority is based upon order of creation:
-  # first created -> highest priority.
 
-#  match '/seed/:seed_bucket_id' => 'seed_buckets#show_seed'
-#  resources :seed_buckets, :path => "/seed/:seed_bucket_id", :seed_or_bucket => :seed
+
+  # Because a SeedBucket can be viewed as either a seed or a bucket, 
+  # the url will specify   =>  domain.com/garden/seed/unique_identifier 
+  #                        =>  domain.com/garden/bucket/unique_identifier
+  
+  #Public tag buckets are  =>  domain.com/eden/unique_identifier or perhaps just
+  #                        =>  domain.com/unique_identifier 
+
+
+
   match '/seed/:seed_bucket_id' => 'seed_buckets#seed_view'
   match '/bucket/:seed_bucket_id' => 'seed_buckets#bucket_view'
   
+ 
+ 
+
+  # The priority is based upon order of creation:
+  # first created -> highest priority.
+ 
   # Sample of regular route:
   #   match 'products/:id' => 'catalog#view'
   # Keep in mind you can assign values other than :controller and :action

@@ -36,3 +36,16 @@ describe Root do
       number_of_roots_between(@seed1, @seed2).should == 0
    end
 end
+
+## For seedbucket tests involving .parent and .child
+describe SeedBucket do
+   before :each do
+      @seed1 = SeedBucket.new; @seed1.save
+      @seed2 = SeedBucket.new; @seed2.save
+   end
+
+   it "shouldn't allow a seed to be its own parent" do
+      lambda { @seed1.parent = @seed1 }.should raise_error
+   end
+
+end
