@@ -1,20 +1,54 @@
 class SeedBucket < ActiveRecord::Base
    attr_accessible :page_title, :body, :bucket, :seed, :bucket_id, :seed_id, :parent_id, :child_id
+
+   def self.copy_seed(seed_to_copy, destination_bucket, options = {})
+      ## Takes one seed_to_copy, one destination_bucket where the seed is being copied to 
+      ## Copied seeds must be copied somewhere
+      ## the in? parameter indicates whether the copied seed should be accepted (true) or only suggested (false) to the destination bucket
+
+      ## copy_seed takes a preferences hash that can include the following boolean values:
+      ##   – :forward_all    (this indicates whether the vine from seed_to_copy to new_seed is all_vine or some_vine)
+      ##   – :in_bucket      (this indicates whether the new_seed is put in destination_bucket with containtment.in = true/false)
    
-   /def self.copy_seed(seed_to_copy, destination_bucket, in?)
+      defaults = {
+         in_bucket: false,
+         forward_all: false
+      }
+      preferences = defaults.merge(options)
+      if preferences[:forward_all].nil? then
+         raise "options hash is not working"
+      else 
+         puts preferences[:forward_all]
+      end
+      #in_bucket = preferences[in_bucket]
+      #in_bucket ||= false
+
+      #forward_all = preferences[forward_all]
+      #forward_all ||= false
+
       ##  Roots
       new_seed = seed_to_copy.dup                # copy all fields of old seed
       new_seed.parent = seed_to_copy             # new seed has roots to, and is child of, old seed 
-      
+      new_seed.save
+
       ##  Vines
       new_seed.pulls_from << seed_to_copy        # create vine from old bucket to new bucket
-                                                 # make it a some_vine
+      new_vine = Vine.where(puller_id: new_seed.id, pusher_id: seed_to_copy.id).first
+      if new_vine.nil? then raise "No vine was created when setting new_seed.pulls_from" 
+      else 
+         new_vine.forward_all = preferences[:forward_all] 
+         new_vine.save  
+      end       
+
       ##  Containment 
       new_seed.bucket = destination_bucket       # put new seed in the destination bucket
-      new_containment_edge = Containment.where(bucket_id: destination_bucket.id, seed_id: seed_to_copy)   
-      new_containment_edge.in = in? # set the containment edge's in value based on the in? parameter
+      new_containment = Containment.where(bucket_id: destination_bucket.id, seed_id: new_seed.id).first
+      if new_containment.nil? then raise "No containment was created when setting new_seed.bucket"
+      else new_containment.in_bucket = preferences[:in_bucket]  # set the containment edge's in value based on the in? parameter
+         new_containment.save
+      end
    end
-   /
+
    ######################  The SeedBucket Model ####################
    #################################################################
    ## The SeedBucket is a Node object that is related to other nodes
@@ -50,7 +84,7 @@ class SeedBucket < ActiveRecord::Base
             :foreign_key => "seed_id", 
             :class_name => "Containment",
             :dependent => :destroy
-            
+
    has_many :seeds, 
             :through => :containment_as_bucket,  
             :uniq => true  # seed can only be in a bucket once
@@ -58,9 +92,9 @@ class SeedBucket < ActiveRecord::Base
             :foreign_key => "bucket_id", 
             :class_name => "Containment",
             :dependent => :destroy
-            
-  #############################   ROOTS   ############################# 
-   
+
+   #############################   ROOTS   ############################# 
+
    has_one  :parent,
             :through => :root_as_child
    has_one  :root_as_child, 
@@ -75,21 +109,20 @@ class SeedBucket < ActiveRecord::Base
             :foreign_key => "parent_id",
             :class_name => "Root",
             :dependent => :destroy
-            
+
    ###########################   VINES   #############################
-   
-   has_many :pushes_to,
-            :through => :vine_as_pusher
-   has_many :vine_as_pusher,
-            :foreign_key => "puller_id",
-            :class_name => "Vine",
-            :dependent => :destroy
 
    has_many :pulls_from,
             :through => :vine_as_puller
    has_many :vine_as_puller,
+            :foreign_key => "puller_id",
+            :class_name => "Vine",
+            :dependent => :destroy
+
+   has_many :pushes_to,
+            :through => :vine_as_pusher
+   has_many :vine_as_pusher,
             :foreign_key => "pusher_id",
             :class_name => "Vine",
             :dependent => :destroy
-   
 end
