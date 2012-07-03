@@ -45,7 +45,7 @@ describe SeedBucket do
    end
 
    it "shouldn't allow a seed to be its own parent" do
-      lambda { @seed1.parent = @seed1 }.should raise_error
+      lambda { @seed1.parent = @seed1; @seed1.save! }.should raise_error
    end
 
 end

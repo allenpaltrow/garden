@@ -1,6 +1,27 @@
 class SeedBucket < ActiveRecord::Base
-   attr_accessible :page_title, :body, :bucket, :seed, :bucket_id, :seed_id, :parent_id, :child_id
+   attr_accessible :page_title, :body, :bucket, :seed, :bucket_id, :seed_id, :parent, :parent_id, :child, :child_id
 
+   #def self.copy_seed_recursive(seed_to_copy, destination_bucket, options = {})
+      
+   def self.create_seed(page_title, body, options = {})
+      #options hash can pass "bucket_id: "  if seed is suggested to particular bucket
+      
+      #new seed is its own origin
+      id = nil
+      return new_seed_id
+   end   
+   
+   def self.recursive_copy_seed(seed_to_copy, destination_bucket, options = {})
+      SeedBucket.copy_seed(seed_to_copy, destination_bucket, options)
+      SeedBucket.seeds.each do |subseed| Seedbucket.recursive_copy_seed(subseed, seed_to_copy, option) end
+   end
+   
+   def self.event_seed_added_to_bucket(new_seed, bucket)
+   # This function should be called whenever a seed has just been added to a bucket
+   # It will cycle through outgoing vines and call seed copy for each
+   
+   end
+   
    def self.copy_seed(seed_to_copy, destination_bucket, options = {})
       ## Takes one seed_to_copy, one destination_bucket where the seed is being copied to 
       ## Copied seeds must be copied somewhere
@@ -14,39 +35,43 @@ class SeedBucket < ActiveRecord::Base
          in_bucket: false,
          forward_all: false
       }
-      preferences = defaults.merge(options)
-      if preferences[:forward_all].nil? then
-         raise "options hash is not working"
-      else 
-         puts preferences[:forward_all]
-      end
-      #in_bucket = preferences[in_bucket]
-      #in_bucket ||= false
+      options = defaults.merge(options)   #if any option is nil, replace with false
 
-      #forward_all = preferences[forward_all]
-      #forward_all ||= false
+      ##validate input types
+      raise "Seed_to_copy must be a SeedBucket object" unless seed_to_copy.kind_of? SeedBucket
+      raise "Destination must be a SeedBucket object" unless destination_bucket.kind_of? SeedBucket
+
+      ## Copy fields
+      new_seed = seed_to_copy.dup                # copy all fields of old seed
 
       ##  Roots
-      new_seed = seed_to_copy.dup                # copy all fields of old seed
       new_seed.parent = seed_to_copy             # new seed has roots to, and is child of, old seed 
+      new_seed.origin = seed_to_copy.origin || seed_to_copy   #sets new origin to Seed_to_copy's origin, unless nil (seed_to_copy)
       new_seed.save
 
       ##  Vines
-      new_seed.pulls_from << seed_to_copy        # create vine from old bucket to new bucket
-      new_vine = Vine.where(puller_id: new_seed.id, pusher_id: seed_to_copy.id).first
-      if new_vine.nil? then raise "No vine was created when setting new_seed.pulls_from" 
-      else 
-         new_vine.forward_all = preferences[:forward_all] 
-         new_vine.save  
-      end       
+      new_seed.pulls_from << seed_to_copy        # create vines from old bucket to new bucket
+      new_seed.pushes_to << seed_to_copy
+      new_push_vine = Vine.where(puller_id: new_seed.id, pusher_id: seed_to_copy.id).first
+      new_pull_vine = Vine.where(puller_id: seed_to_copy.id, pusher_id: new_seed.id).first
 
+      if new_push_vine.nil? || new_pull_vine.nil? then raise "No vine was created when setting new_seed.pulls_from" 
+      else 
+         new_push_vine.forward_all = options[:forward_all] 
+         new_pull_vine.forward_all = options[:forward_all] 
+         new_push_vine.save 
+         new_pull_vine.save 
+      end       
+      
       ##  Containment 
       new_seed.bucket = destination_bucket       # put new seed in the destination bucket
       new_containment = Containment.where(bucket_id: destination_bucket.id, seed_id: new_seed.id).first
       if new_containment.nil? then raise "No containment was created when setting new_seed.bucket"
-      else new_containment.in_bucket = preferences[:in_bucket]  # set the containment edge's in value based on the in? parameter
+      else new_containment.in_bucket = options[:in_bucket]  # set the containment edge's in value based on the in? parameter
          new_containment.save
       end
+      
+      new_seed.save
    end
 
    ######################  The SeedBucket Model ####################
@@ -94,6 +119,10 @@ class SeedBucket < ActiveRecord::Base
             :dependent => :destroy
 
    #############################   ROOTS   ############################# 
+   belongs_to  :origin,
+            :foreign_key => "origin_id",
+            :class_name => "SeedBucket",
+            :dependent => :destroy
 
    has_one  :parent,
             :through => :root_as_child

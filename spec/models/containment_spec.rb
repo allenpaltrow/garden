@@ -14,17 +14,17 @@ describe Containment do
    end
    it "recriprocal bucket/seed pairing produces only one containemnt (and doesn't raise error)" do
       @seed.bucket = @bucket
-      lambda {@bucket.seeds << @seed}.should_not raise_error
+      lambda {@bucket.seeds << @seed}.should raise_error
       number_of_containments_between(@seed, @bucket).should be 1
    end
    it "putting a seed in a bucket several times produces one containment (and doesn't raise error)" do
-      lambda { 3.times { @bucket.seeds << @seed } }.should_not raise_error
+      lambda { 3.times { @bucket.seeds << @seed } }.should raise_error
       number_of_containments_between(@seed, @bucket).should be 1
    end
    it "removes containment when seed is deleted" do
       @seed.bucket = @bucket
       number_of_containments_between(@seed, @bucket).should be 1
-      SeedBucket.destroy(@seed)
+      SeedBucket.destroy(@seed.id)
       number_of_containments_between(@seed, @bucket).should be 0
    end
 end
@@ -82,9 +82,9 @@ describe SeedBucket do
          seedArray.each {|iterated_seed| @bucket.seeds.should include(iterated_seed)}
       end
 
-      it "should only accept a particular seed once (multiple additions doesn't raise error)" do
-         lambda{ 3.times{ @bucket.seeds << @seed } }.should_not raise_error
-         @bucket.should_include @seed
+      it "should only accept a particular seed once and raise error" do
+         lambda{ 3.times{ @bucket.seeds << @seed } }.should raise_error
+         @bucket.seeds.should include @seed
          @bucket.seeds.should == @bucket.seeds.uniq #@seed should only be in .seeds array once
       end
    end
