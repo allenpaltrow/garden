@@ -1,27 +1,43 @@
 class SeedBucket < ActiveRecord::Base
    attr_accessible :page_title, :body, :bucket, :seed, :bucket_id, :seed_id, :parent, :parent_id, :child, :child_id
 
-   #def self.copy_seed_recursive(seed_to_copy, destination_bucket, options = {})
-      
+   after_save self
+
+   def after_save(seed)
+      #IF new seed was put in a bucket, push it across the bucket's vines
+      if !seed.bucket.nil? then SeedBucket.push_across_vines(seed) 
+      end 
+   end
+
+   def self.push_across_vines(seed)
+      if seed.bucket.nil? then raise "seed must be in a bucket to forawrd to vines" 
+      end
+
+      seed.bucket.vine_as_pusher.each do |vine| 
+         SeedBucket.recursive_copy_seed(seed, vine.puller, {in_bucket: vine.forward_all, old_seed_forwards_all: false, new_seed_forwards_all: false})
+      end
+   end
+
    def self.create_seed(page_title, body, options = {})
       #options hash can pass "bucket_id: "  if seed is suggested to particular bucket
-      
+
       #new seed is its own origin
       id = nil
       return new_seed_id
    end   
-   
+
    def self.recursive_copy_seed(seed_to_copy, destination_bucket, options = {})
       SeedBucket.copy_seed(seed_to_copy, destination_bucket, options)
-      SeedBucket.seeds.each do |subseed| Seedbucket.recursive_copy_seed(subseed, seed_to_copy, option) end
+      SeedBucket.seeds.each do |subseed| Seedbucket.recursive_copy_seed(subseed, seed_to_copy, option)
+      end
    end
-   
+
    def self.event_seed_added_to_bucket(new_seed, bucket)
-   # This function should be called whenever a seed has just been added to a bucket
-   # It will cycle through outgoing vines and call seed copy for each
-   
+      # This function should be called whenever a seed has just been added to a bucket
+      # It will cycle through outgoing vines and call seed copy for each
+
    end
-   
+
    def self.copy_seed(seed_to_copy, destination_bucket, options = {})
       ## Takes one seed_to_copy, one destination_bucket where the seed is being copied to 
       ## Copied seeds must be copied somewhere
@@ -30,10 +46,11 @@ class SeedBucket < ActiveRecord::Base
       ## copy_seed takes a preferences hash that can include the following boolean values:
       ##   – :forward_all    (this indicates whether the vine from seed_to_copy to new_seed is all_vine or some_vine)
       ##   – :in_bucket      (this indicates whether the new_seed is put in destination_bucket with containtment.in = true/false)
-   
+
       defaults = {
          in_bucket: false,
-         forward_all: false
+         old_seed_forwards_all: false,
+         new_seed_forwards_all: false
       }
       options = defaults.merge(options)   #if any option is nil, replace with false
 
@@ -52,13 +69,13 @@ class SeedBucket < ActiveRecord::Base
       ##  Vines
       new_seed.pulls_from << seed_to_copy        # create vines from old bucket to new bucket
       new_seed.pushes_to << seed_to_copy
-      new_push_vine = Vine.where(puller_id: new_seed.id, pusher_id: seed_to_copy.id).first
-      new_pull_vine = Vine.where(puller_id: seed_to_copy.id, pusher_id: new_seed.id).first
+      new_push_vine = Vine.where(puller_id: seed_to_copy.id, pusher_id: new_seed.id).first
+      new_pull_vine = Vine.where(puller_id: new_seed.id, pusher_id: seed_to_copy.id).first
 
       if new_push_vine.nil? || new_pull_vine.nil? then raise "No vine was created when setting new_seed.pulls_from" 
       else 
-         new_push_vine.forward_all = options[:forward_all] 
-         new_pull_vine.forward_all = options[:forward_all] 
+         new_push_vine.forward_all = options[:new_seed_forwards_all] 
+         new_pull_vine.forward_all = options[:old_seed_forwards_all] 
          new_push_vine.save 
          new_pull_vine.save 
       end       

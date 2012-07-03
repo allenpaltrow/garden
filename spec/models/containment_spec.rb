@@ -97,6 +97,7 @@ describe SeedBucket do
 
       it "should set .bucket when seed is added" do
          @bucket.seeds << @seed
+         @bucket.save; @seed.save;
          @seed.bucket.should == @bucket
       end
    end

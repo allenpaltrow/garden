@@ -36,6 +36,12 @@ describe SeedBucket do
          @seed1.page_title.should == @seed2.page_title
          @seed1.should_not be @seed2  #Copy shouldn't just move the old seed, it should make a new one
          @seed1.page_title.should == @seed2.page_title 
+         
+         #Vines
+         Vine.where(pusher_id: @seed1.id, puller_id: @seed2.id)
+         Vine.where(pusher_id: @seed2.id, puller_id: @seed1.id)
+         
+         
       end
       it "accepts optional parameters to indicate forward_all and in_bucket" do
       end
