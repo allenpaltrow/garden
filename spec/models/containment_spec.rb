@@ -33,9 +33,9 @@ end
 ## built in methods go. 
 describe SeedBucket do
    before :each do
-      @seed = SeedBucket.new; @seed.save
-      @bucket = SeedBucket.new; @bucket.save
-      @bucket2 = SeedBucket.new; @bucket.save
+      @seed = SeedBucket.create
+      @bucket = SeedBucket.create
+      @bucket2 = SeedBucket.create
    end
    
    ########  SeedBucket.bucket tests  #######
@@ -52,10 +52,8 @@ describe SeedBucket do
          @seed.bucket.should be @bucket
       end
       it "should replace the old one if you set it a second time" do
-
          @seed.bucket = @bucket
          @seed.bucket.should be @bucket
-
          @seed.bucket = @bucket2 # switch buckets
          @seed.bucket.should be @bucket2
       end
@@ -97,7 +95,6 @@ describe SeedBucket do
 
       it "should set .bucket when seed is added" do
          @bucket.seeds << @seed
-         @bucket.save; @seed.save;
          @seed.bucket.should == @bucket
       end
    end

@@ -2,10 +2,11 @@ require 'spec_helper'
 
 describe Vine do
    before :each do
-      @bucket1 = SeedBucket.new; @bucket1.save
-      @bucket2 = SeedBucket.new; @bucket2.save
-      @bucket3 = SeedBucket.new; @bucket3.save
-      @bucket4 = SeedBucket.new; @bucket4.save
+      @seed1 = SeedBucket.create
+      @bucket1 = SeedBucket.create
+      @bucket2 = SeedBucket.create
+      @bucket3 = SeedBucket.create
+      @bucket4 = SeedBucket.create
    end
    def number_of_vines_between(seed, bucket)
       return Vine.where(pusher_id: @bucket1.id, puller_id: @bucket2.id).length + 
@@ -87,5 +88,45 @@ describe Vine do
          SeedBucket.destroy(@bucket2)
          SeedBucket.find(@bucket1).pushes_to.should_not include @seed
       end
+   end
+   ########## Push Across vines ########################
+   describe "push_across_vines" do
+      it "the .push_across_vines function works" do
+         @bucket1.pushes_to << @bucket2
+         @bucket2.pushes_to << @bucket3
+         @bucket2.pushes_to << @bucket4
+         @bucket4.pushes_to << @bucket1
+         
+         @seed1.bucket = @bucket1
+         
+         @seed1.push_across_vines
+#         @seed1.is_already_in(@bucket2).should be true
+#         @seed1.is_already_in(@bucket3).should be false
+#         @seed1.is_already_in(@bucket4).should be false
+#         @bucket1.seeds.length.should be 1
+         
+         @bucket2.seeds.first.push_across_vines
+         @seed1.is_already_in(@bucket2).should be true
+         @seed1.is_already_in(@bucket3).should be true
+         @seed1.is_already_in(@bucket4).should be true
+         @bucket1.seeds.length.should be 1
+      end
+      it "pushes a seed across all the bucket's vines on_save" do
+         ## configure ##
+         @bucket1.pushes_to << @bucket2
+         @bucket2.pushes_to << @bucket3
+         @bucket2.pushes_to << @bucket4
+         @bucket4.pushes_to << @bucket1
+
+         @seed1.is_already_in(@bucket2).should be false
+         @seed1.is_already_in(@bucket3).should be false
+         @seed1.is_already_in(@bucket4).should be false        
+         lambda{ @bucket1.seeds << @seed1; @seed1.push_across_vines}.should_not raise_error
+         @seed1.is_already_in(@bucket2).should be true
+         @seed1.is_already_in(@bucket3).should be true
+         @seed1.is_already_in(@bucket4).should be true
+         @bucket1.seeds.length.should be 1
+      end
+      
    end
 end
