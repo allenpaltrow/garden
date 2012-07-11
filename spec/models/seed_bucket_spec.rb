@@ -2,11 +2,30 @@ require 'spec_helper'
 
 describe SeedBucket do
    before :each do
-      @seedbucket = SeedBucket.new; @seedbucket.save
+      @seedbucket = SeedBucket.create(page_title: "Page Title", url_title: "Url Title")
+      @seedbucket_with_no_url_title = SeedBucket.create(page_title: "page title")
    end
    describe "#new" do
       it "returns a SeedBucket object" do
          @seedbucket.should be_an_instance_of SeedBucket
+      end
+   end
+   describe "#slug" do
+      it "takes any string in url_title and makes it into a working slug" do
+         @seedbucket.slug.should == "url-title"
+         SeedBucket.find("url-title"). should_not be nil
+      end
+      it "uses page_title if no url_title is supplied" do
+         @seedbucket_with_no_url_title.slug.should == "page-title"
+         SeedBucket.find("page-title").should_not be nil
+      end
+      it "creates a new slug when url title is changed, but still responds to old slug" do 
+         @seedbucket.url_title = "new url title"
+         @seedbucket.save
+         @seedbucket.slug.should == "new-url-title"
+         SeedBucket.find("new-url-title").should == @seedbucket
+         SeedBucket.find("url-title").should == @seedbucket
+         
       end
    end
    describe "#copy_one_seed" do

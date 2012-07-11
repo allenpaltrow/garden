@@ -1,5 +1,14 @@
 class SeedBucket < ActiveRecord::Base
-   attr_accessible :page_title, :body, :bucket, :seed, :bucket_id, :seed_id, :parent, :parent_id, :child, :child_id
+   attr_accessible :page_title, :url_title, :body, :bucket, :seed, :bucket_id, :seed_id, :parent, :parent_id, :child, :child_id, :slug
+   
+   ######################## SLUG #############################
+   ## url_title is a column in the seedbucket database. On bucket creation, it either copies the page title, 
+   ## or the user can enter a truncated title string.  
+   
+   extend FriendlyId
+   friendly_id :url_title, :use => [:slugged, :history]
+
+   ######################## COPYING ##########################
    
    def self.seed_copy(seed_to_copy, destination_bucket, options = {})
       new_seed = SeedBucket.recursive_copy_seed(seed_to_copy, destination_bucket, options)
@@ -83,16 +92,35 @@ class SeedBucket < ActiveRecord::Base
       else new_containment.in_bucket = options[:put_in_bucket]  # set the containment edge's in value based on the in? parameter
          new_containment.save
       end
-      
       new_seed.save
       return new_seed
    end
    
-   before_save do
-      #If seed doesn't have an origin, it is its own origin. 
+
+   
+   #######################  VALIDATIONS  #############################
+   
+   #def self.to_slug(string)
+   #   string.downcase.gsub(/[^a-z1-9]+/, '-').chomp('-')
+   #end
+   
+   before_save do 
       self.origin ||= self
+      #self.page_title ||= self.body.split[0...8].join(' ') #Take first 8 words of body
+      self.page_title ||= "Bucket #"+self.id.to_s
+      #self.url_title ||= SeedBucket.to_slug(self.page_title)
+      self.url_title ||= self.page_title
+   end
+ /     #If seed doesn't have an origin, it is its own origin. 
+      self.origin ||= self
+      self.page_title ||= self.body.str.split[0...8].join(' ') #Take first 8 words of body
+      self.page_title ||= self.id
+      self.url_title ||= SeedBucket.to_slug(self.page_title)
    end
    
+   validates :page_title, :presence => true
+   validates :url_title, :presence => true
+  / 
    ######################  The SeedBucket Model ####################
    #################################################################
    ## The SeedBucket is a Node object that is related to other nodes

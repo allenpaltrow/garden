@@ -11,11 +11,8 @@ Garden::Application.routes.draw do
 
 
 
-  match '/seed/:seed_bucket_id' => 'seed_buckets#seed_view'
-  match '/bucket/:seed_bucket_id' => 'seed_buckets#bucket_view'
-  
- 
- 
+  match '/:page_type/:seed_bucket_id' => 'seed_buckets#show'
+   
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

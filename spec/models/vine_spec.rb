@@ -127,6 +127,5 @@ describe Vine do
          @seed1.is_already_in(@bucket4).should be true
          @bucket1.seeds.length.should be 1
       end
-      
    end
 end
