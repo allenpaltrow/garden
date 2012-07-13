@@ -1,10 +1,10 @@
-Garden::Application.routes.draw do
+GardenProject::Application.routes.draw do
   
 
 
   # Because a SeedBucket can be viewed as either a seed or a bucket, 
-  # the url will specify   =>  domain.com/garden/seed/unique_identifier 
-  #                        =>  domain.com/garden/bucket/unique_identifier
+  # the url will specify   =>  domain.com/gardenproject/seed/unique_identifier 
+  #                        =>  domain.com/gardenproject/bucket/unique_identifier
   
   #Public tag buckets are  =>  domain.com/eden/unique_identifier or perhaps just
   #                        =>  domain.com/unique_identifier 

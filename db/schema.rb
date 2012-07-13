@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120711190715) do
+ActiveRecord::Schema.define(:version => 20120713012814) do
 
   create_table "containments", :force => true do |t|
     t.integer  "bucket_id"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(:version => 20120711190715) do
     t.string   "url_title"
     t.integer  "origin_id"
     t.string   "slug"
+    t.string   "spec"
   end
 
   add_index "seed_buckets", ["slug"], :name => "index_seed_buckets_on_slug"

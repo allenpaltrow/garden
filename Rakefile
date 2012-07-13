@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Garden::Application.load_tasks
+GardenProject::Application.load_tasks
